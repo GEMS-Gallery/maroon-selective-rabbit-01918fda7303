@@ -9,6 +9,7 @@ export interface _SERVICE {
       {
         'lifeTotal' : bigint,
         'poisonCounter' : bigint,
+        'name' : string,
         'commanderDamage' : Array<bigint>,
       }
     >
@@ -16,6 +17,7 @@ export interface _SERVICE {
   'resetGame' : ActorMethod<[], undefined>,
   'updateCommanderDamage' : ActorMethod<[bigint, bigint, bigint], undefined>,
   'updateLifeTotal' : ActorMethod<[bigint, bigint], undefined>,
+  'updatePlayerName' : ActorMethod<[bigint, string], undefined>,
   'updatePoisonCounter' : ActorMethod<[bigint, bigint], undefined>,
 }
 export declare const idlFactory: IDL.InterfaceFactory;

@@ -2,10 +2,12 @@ import Array "mo:base/Array";
 import Int "mo:base/Int";
 import Nat "mo:base/Nat";
 import Debug "mo:base/Debug";
+import Text "mo:base/Text";
 
 actor {
   // Types
   type Player = {
+    var name: Text;
     var lifeTotal: Int;
     commanderDamage: [Int];
     var poisonCounter: Nat;
@@ -18,11 +20,21 @@ actor {
   // Stable variable to store game state
   stable var players : [var Player] = Array.tabulateVar<Player>(PLAYER_COUNT, func (i) {
     {
+      var name = "Player " # Nat.toText(i + 1);
       var lifeTotal = INITIAL_LIFE_TOTAL;
       commanderDamage = Array.tabulate<Int>(PLAYER_COUNT, func (j) { 0 });
       var poisonCounter = 0;
     }
   });
+
+  // Update a player's name
+  public func updatePlayerName(playerId: Nat, newName: Text) : async () {
+    if (playerId < PLAYER_COUNT) {
+      players[playerId].name := newName;
+    } else {
+      Debug.print("Invalid player ID");
+    };
+  };
 
   // Update a player's life total
   public func updateLifeTotal(playerId: Nat, change: Int) : async () {
@@ -47,6 +59,7 @@ actor {
         }
       );
       players[playerId] := {
+        var name = players[playerId].name;
         var lifeTotal = players[playerId].lifeTotal;
         commanderDamage = updatedDamage;
         var poisonCounter = players[playerId].poisonCounter;
@@ -70,6 +83,7 @@ actor {
   public func resetGame() : async () {
     for (i in players.keys()) {
       players[i] := {
+        var name = "Player " # Nat.toText(i + 1);
         var lifeTotal = INITIAL_LIFE_TOTAL;
         commanderDamage = Array.tabulate<Int>(PLAYER_COUNT, func (j) { 0 });
         var poisonCounter = 0;
@@ -78,11 +92,11 @@ actor {
   };
 
   // Get the current game state
-  public query func getGameState() : async [{ lifeTotal: Int; commanderDamage: [Int]; poisonCounter: Nat }] {
-    Array.map<Player, { lifeTotal: Int; commanderDamage: [Int]; poisonCounter: Nat }>(
+  public query func getGameState() : async [{ name: Text; lifeTotal: Int; commanderDamage: [Int]; poisonCounter: Nat }] {
+    Array.map<Player, { name: Text; lifeTotal: Int; commanderDamage: [Int]; poisonCounter: Nat }>(
       Array.freeze(players),
       func (player) {
-        { lifeTotal = player.lifeTotal; commanderDamage = player.commanderDamage; poisonCounter = player.poisonCounter }
+        { name = player.name; lifeTotal = player.lifeTotal; commanderDamage = player.commanderDamage; poisonCounter = player.poisonCounter }
       }
     )
   };

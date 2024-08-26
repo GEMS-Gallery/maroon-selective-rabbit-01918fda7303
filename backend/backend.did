@@ -1,12 +1,15 @@
 service : {
   getGameState: () ->
-   (vec record {
-          commanderDamage: vec int;
-          lifeTotal: int;
-          poisonCounter: nat;
-        }) query;
+   (vec
+     record {
+       commanderDamage: vec int;
+       lifeTotal: int;
+       name: text;
+       poisonCounter: nat;
+     }) query;
   resetGame: () -> ();
   updateCommanderDamage: (nat, nat, int) -> ();
   updateLifeTotal: (nat, int) -> ();
+  updatePlayerName: (nat, text) -> ();
   updatePoisonCounter: (nat, int) -> ();
 }

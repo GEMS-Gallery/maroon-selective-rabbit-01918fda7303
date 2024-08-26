@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Grid, Button, Typography, Paper, Box } from '@mui/material';
+import { Container, Grid, Button, Typography, Paper, Box, TextField } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import { backend } from 'declarations/backend';
 
 interface Player {
+  name: string;
   lifeTotal: number;
   commanderDamage: number[];
   poisonCounter: number;
@@ -22,6 +23,7 @@ const App: React.FC = () => {
     try {
       const gameState = await backend.getGameState();
       setPlayers(gameState.map(player => ({
+        name: player.name,
         lifeTotal: Number(player.lifeTotal),
         commanderDamage: player.commanderDamage.map(Number),
         poisonCounter: Number(player.poisonCounter)
@@ -60,6 +62,15 @@ const App: React.FC = () => {
     }
   };
 
+  const updatePlayerName = async (playerId: number, newName: string) => {
+    try {
+      await backend.updatePlayerName(playerId, newName);
+      await fetchGameState();
+    } catch (error) {
+      console.error('Error updating player name:', error);
+    }
+  };
+
   const resetGame = async () => {
     try {
       await backend.resetGame();
@@ -84,7 +95,13 @@ const App: React.FC = () => {
             {players.map((player, index) => (
               <Grid item xs={12} sm={6} key={index}>
                 <Paper elevation={3} sx={{ p: 2, backgroundColor: 'rgba(255,255,255,0.8)' }}>
-                  <Typography variant="h5">Player {index + 1}</Typography>
+                  <TextField
+                    value={player.name}
+                    onChange={(e) => updatePlayerName(index, e.target.value)}
+                    variant="outlined"
+                    size="small"
+                    sx={{ mb: 2 }}
+                  />
                   <Typography variant="h3">{player.lifeTotal}</Typography>
                   <Box sx={{ mt: 2 }}>
                     <Button
@@ -134,7 +151,7 @@ const App: React.FC = () => {
                     {player.commanderDamage.map((damage, opponentIndex) => (
                       index !== opponentIndex && (
                         <Grid item xs={4} key={opponentIndex}>
-                          <Typography>From P{opponentIndex + 1}: {damage}</Typography>
+                          <Typography>From {players[opponentIndex].name}: {damage}</Typography>
                           <Button
                             size="small"
                             variant="outlined"
