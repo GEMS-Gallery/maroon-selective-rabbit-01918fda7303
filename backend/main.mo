@@ -8,6 +8,7 @@ actor {
   type Player = {
     var lifeTotal: Int;
     commanderDamage: [Int];
+    var poisonCounter: Nat;
   };
 
   // Constants
@@ -19,6 +20,7 @@ actor {
     {
       var lifeTotal = INITIAL_LIFE_TOTAL;
       commanderDamage = Array.tabulate<Int>(PLAYER_COUNT, func (j) { 0 });
+      var poisonCounter = 0;
     }
   });
 
@@ -47,9 +49,20 @@ actor {
       players[playerId] := {
         var lifeTotal = players[playerId].lifeTotal;
         commanderDamage = updatedDamage;
+        var poisonCounter = players[playerId].poisonCounter;
       };
     } else {
       Debug.print("Invalid player IDs or same player");
+    };
+  };
+
+  // Update a player's poison counter
+  public func updatePoisonCounter(playerId: Nat, change: Int) : async () {
+    if (playerId < PLAYER_COUNT) {
+      let newPoisonCounter = Int.max(0, Int.min(10, players[playerId].poisonCounter + change));
+      players[playerId].poisonCounter := Nat.fromInt(newPoisonCounter);
+    } else {
+      Debug.print("Invalid player ID");
     };
   };
 
@@ -59,16 +72,17 @@ actor {
       players[i] := {
         var lifeTotal = INITIAL_LIFE_TOTAL;
         commanderDamage = Array.tabulate<Int>(PLAYER_COUNT, func (j) { 0 });
+        var poisonCounter = 0;
       };
     };
   };
 
   // Get the current game state
-  public query func getGameState() : async [{ lifeTotal: Int; commanderDamage: [Int] }] {
-    Array.map<Player, { lifeTotal: Int; commanderDamage: [Int] }>(
+  public query func getGameState() : async [{ lifeTotal: Int; commanderDamage: [Int]; poisonCounter: Nat }] {
+    Array.map<Player, { lifeTotal: Int; commanderDamage: [Int]; poisonCounter: Nat }>(
       Array.freeze(players),
       func (player) {
-        { lifeTotal = player.lifeTotal; commanderDamage = player.commanderDamage }
+        { lifeTotal = player.lifeTotal; commanderDamage = player.commanderDamage; poisonCounter = player.poisonCounter }
       }
     )
   };

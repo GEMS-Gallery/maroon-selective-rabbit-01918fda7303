@@ -7,6 +7,7 @@ import { backend } from 'declarations/backend';
 interface Player {
   lifeTotal: number;
   commanderDamage: number[];
+  poisonCounter: number;
 }
 
 const App: React.FC = () => {
@@ -22,7 +23,8 @@ const App: React.FC = () => {
       const gameState = await backend.getGameState();
       setPlayers(gameState.map(player => ({
         lifeTotal: Number(player.lifeTotal),
-        commanderDamage: player.commanderDamage.map(Number)
+        commanderDamage: player.commanderDamage.map(Number),
+        poisonCounter: Number(player.poisonCounter)
       })));
       setLoading(false);
     } catch (error) {
@@ -46,6 +48,15 @@ const App: React.FC = () => {
       await fetchGameState();
     } catch (error) {
       console.error('Error updating commander damage:', error);
+    }
+  };
+
+  const updatePoisonCounter = async (playerId: number, change: number) => {
+    try {
+      await backend.updatePoisonCounter(playerId, BigInt(change));
+      await fetchGameState();
+    } catch (error) {
+      console.error('Error updating poison counter:', error);
     }
   };
 
@@ -91,6 +102,28 @@ const App: React.FC = () => {
                     sx={{ ml: 1 }}
                   >
                     Remove
+                  </Button>
+                </Box>
+                <Typography variant="h6" sx={{ mt: 2 }}>
+                  Poison Counter: {player.poisonCounter}
+                </Typography>
+                <Box sx={{ mt: 1 }}>
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    onClick={() => updatePoisonCounter(index, 1)}
+                    size="small"
+                  >
+                    +
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    onClick={() => updatePoisonCounter(index, -1)}
+                    size="small"
+                    sx={{ ml: 1 }}
+                  >
+                    -
                   </Button>
                 </Box>
                 <Typography variant="h6" sx={{ mt: 2 }}>

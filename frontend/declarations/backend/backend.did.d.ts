@@ -5,11 +5,18 @@ import type { IDL } from '@dfinity/candid';
 export interface _SERVICE {
   'getGameState' : ActorMethod<
     [],
-    Array<{ 'lifeTotal' : bigint, 'commanderDamage' : Array<bigint> }>
+    Array<
+      {
+        'lifeTotal' : bigint,
+        'poisonCounter' : bigint,
+        'commanderDamage' : Array<bigint>,
+      }
+    >
   >,
   'resetGame' : ActorMethod<[], undefined>,
   'updateCommanderDamage' : ActorMethod<[bigint, bigint, bigint], undefined>,
   'updateLifeTotal' : ActorMethod<[bigint, bigint], undefined>,
+  'updatePoisonCounter' : ActorMethod<[bigint, bigint], undefined>,
 }
 export declare const idlFactory: IDL.InterfaceFactory;
 export declare const init: (args: { IDL: typeof IDL }) => IDL.Type[];

@@ -6,6 +6,7 @@ export const idlFactory = ({ IDL }) => {
           IDL.Vec(
             IDL.Record({
               'lifeTotal' : IDL.Int,
+              'poisonCounter' : IDL.Nat,
               'commanderDamage' : IDL.Vec(IDL.Int),
             })
           ),
@@ -15,6 +16,7 @@ export const idlFactory = ({ IDL }) => {
     'resetGame' : IDL.Func([], [], []),
     'updateCommanderDamage' : IDL.Func([IDL.Nat, IDL.Nat, IDL.Int], [], []),
     'updateLifeTotal' : IDL.Func([IDL.Nat, IDL.Int], [], []),
+    'updatePoisonCounter' : IDL.Func([IDL.Nat, IDL.Int], [], []),
   });
 };
 export const init = ({ IDL }) => { return []; };

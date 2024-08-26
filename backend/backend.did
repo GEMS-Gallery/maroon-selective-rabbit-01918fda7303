@@ -3,8 +3,10 @@ service : {
    (vec record {
           commanderDamage: vec int;
           lifeTotal: int;
+          poisonCounter: nat;
         }) query;
   resetGame: () -> ();
   updateCommanderDamage: (nat, nat, int) -> ();
   updateLifeTotal: (nat, int) -> ();
+  updatePoisonCounter: (nat, int) -> ();
 }
